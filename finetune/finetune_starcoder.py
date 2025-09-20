@@ -24,7 +24,7 @@ model = AutoModelForCausalLM.from_pretrained(
     torch_dtype=torch.float, 
     device_map="auto"
 )
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
 tokenizer.pad_token = tokenizer.eos_token  
 dataset = load_dataset("OLMo-Coding/starcoder-python-instruct")
 
@@ -36,6 +36,9 @@ def formatting_func(example):
         "prompt": prompt,
         "completion": example["text"]
     }
+
+dataset = dataset.map(formatting_func, remove_columns=["instruction", "text", "id", "metadata", "added", "created", "source"])
+
 
 #global batch size 64
 training_args = SFTConfig(
@@ -75,12 +78,11 @@ training_args = SFTConfig(
 )
 
 # ==== Train ====
-dataset = dataset.map(formatting_func)
 
 trainer = SFTTrainer(
     model=model,
     processing_class=tokenizer,
-    train_dataset=dataset,
+    train_dataset=dataset["train"],
     args = training_args,
 
 )

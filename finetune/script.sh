@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=finetune_%j
-#SBATCH --output=/logs/finetune/%j.err
-#SBATCH --error=/logs/finetune/%j.err
+#SBATCH --output=logs/finetune/%j.out
+#SBATCH --error=logs/finetune/%j.err
 #SBATCH --partition=general
 #SBATCH --gres=gpu:1  
 #SBATCH --nodes=1
@@ -15,4 +15,4 @@ source ~/miniconda3/etc/profile.d/conda.sh
 conda activate myenv310
 
 # Run evaluation
-python /home/{ANDREW_ID}/catastrophic-forgetting/finetune/finetune_starcoder.py --model_path "{MODEL PATH}"  --output_dir "{FT OUTPUT PATH}" --learning_rate {LR}
+python /home/{USER}/catastrophic-forgetting/finetune/finetune_starcoder.py --model_path {MODEL_PATH}  --output_dir {OUTPUT} --learning_rate {LR}
