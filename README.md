@@ -1,4 +1,4 @@
-# Sharpness-Aware Pretraining Mitigates Catastrophic Forgetting
+# Sharpness-Aware Pretraining Mitigates Catastrophic Forgetting (ICML 2026)
 
 **Authors:** Ishaan Watts*, Catherine Li*, Sachin Goyal, Jacob Mitchell Springer, Aditi Raghunathan
 
