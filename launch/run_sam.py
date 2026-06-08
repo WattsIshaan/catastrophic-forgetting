@@ -21,9 +21,9 @@ pretrained_models = ArtifactSet.from_product(
             'train_tokens': [12, 24, 48, 96, 192],
             'weight_decay': [0.1],
             'batch_size': [256],
-            # When using WSD, switch scheduler_name to the 'wsd' schedule.
-            'scheduler_name': ['cosine_with_warmup'],
-            # 'scheduler_name': ['constant_with_warmup'],
+            'scheduler_name': ['cosine_with_warmup'], # for cosine
+            # 'scheduler_name': ['constant_with_warmup'], # for anneal
+            # 'scheduler_name': ['wsd'], # for anneal2
             'scheduler_alpha_f': [0.1],
             'model_size': ['60m'],
             'sam_rho': [0.05],
@@ -95,10 +95,11 @@ executor = SlurmExecutor(
     setup_command=setup_command,
 )
 
+executor.stage('pretrain', pretrained_models)
+
 # ===========================================================================
 # COSINE stages
 # ===========================================================================
-executor.stage('pretrain', pretrained_models)
 executor.stage('pretrain_eval', model_evaluations)
 executor.stage('hf', hf_models)
 executor.stage('hf_eval', hf_model_evaluations)

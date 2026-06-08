@@ -1423,7 +1423,7 @@ class ModelEvaluation(Artifact):
     device: str = 'cuda'
     chunk_size: int = 1024
     hf_model: bool = False                        # evaluate an HF-converted checkpoint
-    quant_bit: int = 4                            # quantization bit-width (HF only)
+    quant_bit: int | None = None                            # quantization bit-width (HF only)
 
     @property
     def relpath(self) -> str:

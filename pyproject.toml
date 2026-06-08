@@ -10,21 +10,21 @@ description = "Open Language Model (OLMo)"
 authors = [
     { name = "Allen Institute for Artificial Intelligence", email = "olmo@allenai.org" }
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.13"
 license = { file = "LICENSE" }
 dependencies = [
-    "numpy<2",
-    "torch>=2.1",
-    "ai2-olmo-core>=1.8.0",
-    "omegaconf",
-    "rich",
-    "boto3",
-    "google-cloud-storage",
-    "tokenizers",
-    "packaging",
-    "cached_path>=1.6.2",
-    "transformers",
-    "importlib_resources",
+    "numpy==2.2.6",
+    "torch==2.9.1",
+    "ai2-olmo-core==2.4.0",
+    "omegaconf==2.3.0",
+    "rich==13.9.4",
+    "boto3==1.42.21",
+    "google-cloud-storage==3.7.0",
+    "tokenizers==0.22.2",
+    "packaging==25.0",
+    "cached_path==1.8.1",
+    "transformers==4.57.3",
+    "importlib_resources==6.5.2",
 ]
 
 [project.optional-dependencies]
@@ -41,15 +41,17 @@ dev = [
     "build",
 ]
 train = [
-    "wandb",
-    "beaker-gantry",
-    "click",
-    "torchmetrics",
-    "smashed[remote]>=0.21.1",
-    "safetensors",
-    "datasets",
-    "scikit-learn",
-    "msgspec>=0.14.0",
+    "wandb==0.23.1",
+    "beaker-gantry==3.3.1",
+    "click==8.3.1",
+    "torchmetrics==1.8.2",
+    "smashed[remote]==0.21.5",
+    "safetensors==0.7.0",
+    "datasets==4.4.2",
+    "scikit-learn==1.8.0",
+    "msgspec==0.20.0",
+    "ninja==1.13.0",
+    "bitsandbytes==0.49.1",
 ]
 all = [
     "ai2-olmo[dev,train]",
