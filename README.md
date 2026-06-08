@@ -2,7 +2,7 @@
 
 **Authors:** Ishaan Watts*, Catherine Li*, Sachin Goyal, Jacob Mitchell Springer, Aditi Raghunathan
 
-**[Paper](https://arxiv.org/abs/2605.02105)** | **[Code](https://github.com/WattsIshaan/sharpness-aware-pretraining)**  | **[Website]()**
+📄 **[Paper](https://arxiv.org/abs/2605.02105)** | 💻 **[Code](https://github.com/WattsIshaan/sharpness-aware-pretraining)** | 🌐 **[Website]()**
 
 ## Installation
 
