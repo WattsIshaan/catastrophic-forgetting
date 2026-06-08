@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sharpness-Aware Pretraining Mitigates Catastrophic Forgetting</title>
+<meta name="description" content="ICML 2026. Reducing the sharpness of the pretraining loss — via SAM, larger peak learning rates, and shorter LR decay — improves the learning–forgetting tradeoff, mitigating catastrophic forgetting after post-training and quantization." />
+
+<!-- Open Graph / social preview -->
+<meta property="og:title" content="Sharpness-Aware Pretraining Mitigates Catastrophic Forgetting" />
+<meta property="og:description" content="ICML 2026. Flatter pretraining minima preserve capabilities through post-training and quantization — up to 80% less forgetting." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="assets/figure1_poster.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --accent:#9d1d32;        /* CMU cardinal — matches the maroon SAM curves */
+    --accent-soft:#fbeaed;
+    --ink:#1f2430;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+    --btn:#1f2937;
+    --callout:#15506b;       /* deep teal, echoes the deck's section dividers */
+    --bg:#ffffff;
+    --maxw:880px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased}
+  .container{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+  /* Hero */
+  .hero{padding:64px 0 8px;text-align:center}
+  .badge{display:inline-block;font-size:.78rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:6px 14px;border-radius:999px;margin-bottom:22px}
+  h1.title{font-family:'Lora',Georgia,serif;font-weight:700;font-size:2.5rem;line-height:1.22;margin:0 0 24px;letter-spacing:-.01em}
+  .authors{font-size:1.08rem;margin:0 0 6px;font-weight:500}
+  .authors sup{color:var(--accent);font-weight:600}
+  .affil{color:var(--muted);font-size:1rem;margin:0 0 4px}
+  .note{color:#9ca3af;font-size:.82rem;margin:0 0 26px}
+  .links{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:8px}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--btn);color:#fff;text-decoration:none;font-weight:500;font-size:.95rem;padding:10px 18px;border-radius:999px;transition:transform .08s ease,background .15s ease}
+  .btn:hover{background:#000;transform:translateY(-1px)}
+  .btn svg{width:18px;height:18px;fill:currentColor}
+
+  /* Sections */
+  section{padding:46px 0;border-top:1px solid var(--line)}
+  section h2{font-family:'Lora',Georgia,serif;font-weight:600;font-size:1.6rem;text-align:center;margin:0 0 10px}
+  .lead{text-align:center;color:#4b5563;max-width:660px;margin:0 auto 30px}
+  /* Abstract blob: no divider above it (line moves below), light card bg */
+  #abstract{border-top:0}
+  .abstract{background:#f8fafc;border:1px solid var(--line);border-radius:16px;padding:30px 40px}
+  .abstract p{font-size:1.05rem;text-align:justify;color:#374151;margin:0}
+  .prose p{color:#374151;margin:0 auto 18px;max-width:680px}
+  .prose a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+
+  /* Figures */
+  figure.fig{margin:26px 0 0}
+  figure.fig img,figure.fig video{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:14px;background:#fff}
+  figure.fig video img{border:0;border-radius:0}
+  figure.narrow{max-width:470px;margin-left:auto;margin-right:auto}
+  figure.medium{max-width:760px;margin-left:auto;margin-right:auto}
+  figcaption{color:var(--muted);font-size:.9rem;line-height:1.55;margin-top:12px;text-align:center}
+  figcaption strong{color:#374151}
+  .gallery{display:grid;gap:38px}
+
+  /* Key-message callout (deck section divider) */
+  .callout{background:var(--callout);color:#fff;border-radius:16px;padding:30px 32px;text-align:center;margin:34px auto 0;max-width:760px}
+  .callout p{margin:0;font-family:'Lora',Georgia,serif;font-size:1.6rem;line-height:1.45}
+  .callout em{font-style:italic}
+
+  /* Per-change description + finding box */
+  .change-desc{text-align:center;color:#4b5563;max-width:660px;margin:6px auto 0;font-size:1.02rem}
+  .change-desc a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+  a.cite{color:var(--accent);text-decoration:none;font-weight:500;white-space:nowrap}
+  a.cite:hover{text-decoration:underline;text-underline-offset:2px}
+  .finding{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:10px;padding:14px 20px;margin:18px auto 0;max-width:620px}
+  .finding .lbl{display:block;font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+  .finding p{margin:0;color:#1f2937;font-size:1.2rem;line-height:1.5;font-weight:500}
+
+  .subhead{text-align:center;font-family:'Lora',serif;font-weight:600;font-size:1.15rem;color:#374151;margin:44px 0 4px}
+  .subhead-note{text-align:center;color:var(--muted);font-size:.9rem;margin:0 0 8px}
+
+  /* BibTeX */
+  .bibtex{background:#0f172a;color:#e2e8f0;border-radius:14px;padding:20px 22px;overflow:auto;position:relative}
+  .bibtex pre{margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem;line-height:1.6;white-space:pre}
+  .copy-btn{position:absolute;top:12px;right:12px;background:#1e293b;color:#cbd5e1;border:1px solid #334155;border-radius:8px;padding:6px 12px;font-size:.8rem;cursor:pointer;font-family:'Inter',sans-serif}
+  .copy-btn:hover{background:#334155}
+
+  footer{padding:36px 0 56px;text-align:center;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line)}
+  footer a{color:var(--muted)}
+
+  @media(max-width:720px){
+    h1.title{font-size:1.9rem}
+    .hero{padding:44px 0 4px}
+    .callout p{font-size:1.3rem}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================ HERO ============================ -->
+<header class="hero">
+  <div class="container">
+    <span class="badge">ICML 2026</span>
+    <h1 class="title">Sharpness-Aware Pretraining Mitigates Catastrophic Forgetting</h1>
+
+    <p class="authors">
+      Ishaan Watts<sup>*</sup>,
+      Catherine Li<sup>*</sup>,
+      Sachin Goyal,
+      Jacob Mitchell Springer<sup>&dagger;</sup>,
+      Aditi Raghunathan<sup>&dagger;</sup>
+    </p>
+    <p class="affil">Carnegie Mellon University</p>
+    <p class="note"><sup>*</sup>Equal contribution &nbsp;&nbsp; <sup>&dagger;</sup>Equal advising</p>
+
+    <nav class="links">
+      <a class="btn" href="https://arxiv.org/abs/2605.02105" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm7 1.5L18.5 9H13V3.5zM8 13h8v1.5H8V13zm0 3h8v1.5H8V16z"/></svg>
+        arXiv
+      </a>
+      <a class="btn" href="https://github.com/WattsIshaan/sharpness-aware-pretraining" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M12 .5C5.37.5 0 5.78 0 12.29c0 5.21 3.44 9.63 8.21 11.19.6.11.82-.25.82-.56v-2.1c-3.34.7-4.04-1.58-4.04-1.58-.55-1.36-1.33-1.73-1.33-1.73-1.09-.73.08-.72.08-.72 1.2.08 1.84 1.21 1.84 1.21 1.07 1.79 2.81 1.27 3.49.97.11-.76.42-1.27.76-1.56-2.67-.3-5.47-1.31-5.47-5.83 0-1.29.47-2.34 1.24-3.17-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.21a11.6 11.6 0 0 1 6.01 0c2.29-1.53 3.3-1.21 3.3-1.21.66 1.66.24 2.88.12 3.18.77.83 1.24 1.88 1.24 3.17 0 4.53-2.81 5.53-5.49 5.82.43.37.81 1.1.81 2.22v3.29c0 .31.21.68.82.56C20.57 21.91 24 17.5 24 12.29 24 5.78 18.63.5 12 .5z"/></svg>
+        Code
+      </a>
+    </nav>
+  </div>
+</header>
+
+<!-- ============================ TEASER ============================ -->
+<div class="container" style="padding-top:34px;">
+  <figure class="fig medium" style="margin-top:0;">
+    <video controls autoplay loop muted playsinline poster="assets/figure1_poster.png" aria-label="Animated OLMo-2-1B main result: a short SAM mid-training phase reduces forgetting of pretraining-benchmark accuracy after post-training (Meta-Math, Tülu-3) and 4-bit quantization.">
+      <source src="assets/figure1_animation.mp4" type="video/mp4" />
+      <img src="assets/figure1_animation.gif" alt="OLMo-2-1B: a short SAM mid-training phase reduces forgetting of pretraining-benchmark accuracy after post-training (Meta-Math, Tülu-3) and 4-bit quantization." />
+    </video>
+    <figcaption><strong>Main result (OLMo-2-1B).</strong> Starting from a 4T-token checkpoint, a short SAM mid-training phase preserves more pretraining-benchmark accuracy after post-training (Meta-Math, T&uuml;lu-3) and 4-bit quantization.</figcaption>
+  </figure>
+</div>
+
+<!-- ============================ ABSTRACT ============================ -->
+<section id="abstract">
+  <div class="container abstract">
+    <h2>Abstract</h2>
+    <p>
+      Pretraining optimizers are tuned to produce the strongest possible base model, on the assumption
+      that a stronger starting point yields a stronger model after subsequent changes like post-training
+      and quantization. This overlooks the geometry of the base model which controls how much of the base
+      model's capabilities survive subsequent parameter updates. We study three pretraining optimization
+      approaches that bias optimization toward flatter minima: Sharpness-Aware Minimization (SAM), large
+      learning rates, and shortened learning rate annealing periods. Across model sizes ranging from 20M
+      to 150M parameters, we find that these interventions consistently improve downstream performance
+      after post-training on five common datasets with up to 80% less forgetting. These principles hold at
+      scale: a short SAM mid-training phase applied to an existing OLMo-2-1B checkpoint reduces forgetting
+      by 31% after MetaMath post-training and by 40% after 4-bit quantization.
+    </p>
+  </div>
+</section>
+
+<!-- ============================ MOTIVATION ============================ -->
+<section id="motivation">
+  <div class="container">
+    <h2>Pretraining loss isn't the whole story</h2>
+    <p class="lead">Pretraining optimizers are tuned to make the strongest <em>base</em> model. But in a multi-stage pipeline we want a model that stays strong after <em>further modification</em>.</p>
+    <div class="prose">
+      <p>Pretraining loss alone doesn't capture a base model's <strong>adaptivity</strong>. The hidden variable is <strong>forgetting</strong>: fine-tuning performance depends on how much of the pretrained knowledge the new task relies on still survives the update. So base models that <em>forget less</em> end up <em>learning more</em> &mdash; the right yardstick is the learning&ndash;forgetting tradeoff&nbsp;👇, not base quality.</p>
+    </div>
+    <figure class="fig" style="max-width:510px;margin:26px auto 0;">
+      <img src="assets/fig_frontier.png" alt="Learning–forgetting frontier for OLMo-60M: as a base model is fine-tuned it traces a tradeoff between fine-tuning loss (learning) and pretraining loss (forgetting); the best fine-tuned model sits at the knee." />
+      <figcaption><strong>The learning&ndash;forgetting frontier.</strong> We pretrain a model from scratch, then fine-tune it under a range of varying hyperparameters to get a Pareto frontier between fine-tuning loss (learning) & pretraining loss (forgetting).</figcaption>
+    </figure>
+    <div class="callout">
+      <p><strong>Main Claim:</strong> Reducing the <em>sharpness</em> of the pretraining loss <em>improves</em> the learning&ndash;forgetting tradeoff.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ CHANGES TO THE OPTIMIZER ============================ -->
+<section id="results">
+  <div class="container">
+    <h2>Changes to the optimizer to reduce <em>sharpness</em></h2>
+
+    <!-- Explicit: SAM -->
+    <div class="subhead">Explicit: Sharpness-Aware Minimization (SAM)</div>
+    <p class="change-desc">SAM&nbsp;<a class="cite" href="https://arxiv.org/abs/2010.01412" target="_blank" rel="noopener">(Foret et al., 2021)</a> minimizes the <em>worst-case</em> loss in a neighborhood of the weights, steering pretraining into wider, flatter, forgetting-resistant minima.</p>
+    <figure class="fig medium">
+      <img src="assets/fig_datasets.png" alt="Per-dataset learning–forgetting frontiers: SAM (maroon) vs AdamW (blue) on StarCoder, MusicPile, Tülu-3, GSM8K, and StackMathQA." />
+      <figcaption>We pretrain OLMo-60M models with a cosine schedule using AdamW and SAM on 192B tokens and
+        fine-tune on five datasets. SAM achieves a better learning-forgetting frontier.</figcaption>
+    </figure>
+    <figure class="fig medium">
+      <img src="assets/fig_tokens.png" alt="AdamW vs SAM learning–forgetting frontiers on StarCoder for OLMo-60M models pretrained on 12B to 192B tokens; SAM's advantage widens with more pretraining tokens." />
+      <figcaption>We pretrain OLMo-60M models with a cosine schedule using AdamW and SAM on 4B to 192B tokens and fine-tune on StarCoder. The gap between SAM and AdamW widens as we scale pretraining tokens.</figcaption>
+    </figure>
+    <div class="finding">
+      <span class="lbl">Finding</span>
+      <p>SAM improves the learning&ndash;forgetting tradeoff across datasets, and its advantage over AdamW grows with more pretraining tokens.</p>
+    </div>
+
+    <!-- Implicit: peak learning rate -->
+    <div class="subhead">Implicit: Peak learning rate</div>
+    <p class="change-desc">Gradient descent settles at the <em>edge of stability</em>&nbsp;<a class="cite" href="https://arxiv.org/abs/2103.00065" target="_blank" rel="noopener">(Cohen et al., 2021)</a>, where the largest Hessian eigenvalue (sharpness) is capped at &asymp;&nbsp;2/&eta; by the learning rate&nbsp;&eta; &mdash; so a larger peak LR bounds sharpness lower and forces a flatter minimum.</p>
+    <figure class="fig medium">
+      <img src="assets/fig_lr.png" alt="A higher peak learning rate gives a worse pretraining loss (left) but a better learning-forgetting tradeoff after fine-tuning (right)." />
+      <figcaption>Peak learning rate vs pretraining loss (left), and the resulting learning&ndash;forgetting frontier after fine-tuning (right).</figcaption>
+    </figure>
+    <div class="finding">
+      <span class="lbl">Finding</span>
+      <p>Higher peak LR improves the learning&ndash;forgetting tradeoff.</p>
+    </div>
+
+    <div class="subhead">More in the paper</div>
+    <p class="subhead-note">(1)&nbsp;The intuition behind why minimizing sharpness helps, (2)&nbsp;a Hessian analysis of our sharpness approximation, and (3)&nbsp;scaling behaviours across model sizes and token budgets.</p>
+  </div>
+</section>
+
+<!-- ============================ BIBTEX ============================ -->
+<section id="bibtex">
+  <div class="container">
+    <h2>BibTeX</h2>
+    <div class="bibtex">
+      <button class="copy-btn" id="copy-btn" onclick="copyBib()">Copy</button>
+<pre id="bibtex-code">@misc{watts2026sharpnessawarepretrainingmitigatescatastrophic,
+      title={Sharpness-Aware Pretraining Mitigates Catastrophic Forgetting},
+      author={Ishaan Watts and Catherine Li and Sachin Goyal and Jacob Mitchell Springer and Aditi Raghunathan},
+      year={2026},
+      eprint={2605.02105},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2605.02105},
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FOOTER ============================ -->
+<footer>
+  <div class="container">
+    <p>Website template adapted from the <a href="https://github.com/nerfies/nerfies.github.io" target="_blank" rel="noopener">Nerfies</a> project page. Content licensed under CC BY-SA 4.0.</p>
+  </div>
+</footer>
+
+<script>
+  function copyBib(){
+    const t = document.getElementById('bibtex-code').innerText;
+    navigator.clipboard.writeText(t).then(function(){
+      const b = document.getElementById('copy-btn');
+      const o = b.innerText; b.innerText = 'Copied!';
+      setTimeout(function(){ b.innerText = o; }, 1500);
+    });
+  }
+</script>
+</body>
+</html>

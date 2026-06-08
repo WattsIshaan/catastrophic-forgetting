@@ -1,0 +1,8 @@
+# Matplotlib cache created by figure_generation scripts
+.mplcache/
+
+# Python build artifacts
+__pycache__/
+*.pyc
+
+.DS_Store
