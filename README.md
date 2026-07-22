@@ -2,7 +2,7 @@
 
 **Authors:** Ishaan Watts*, Catherine Li*, Sachin Goyal, Jacob Mitchell Springer, Aditi Raghunathan
 
-📄 **[Paper](https://arxiv.org/abs/2605.02105)** | 💻 **[Code](https://github.com/WattsIshaan/sharpness-aware-pretraining)** | 🌐 **[Website](https://wattsishaan.github.io/sharpness-aware-pretraining/)**
+📄 **[Paper](https://arxiv.org/abs/2605.02105)** | 💻 **[Code](https://github.com/WattsIshaan/sharpness-aware-pretraining)** | 🤗 **[Checkpoints](https://huggingface.co/collections/WattsIshaan/olmo-2-1b-midtrained)** | 🌐 **[Website](https://wattsishaan.github.io/sharpness-aware-pretraining/)**
 
 ## Installation
 
